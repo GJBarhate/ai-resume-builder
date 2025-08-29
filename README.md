@@ -215,7 +215,4 @@ The maintainers will review your PR. Once approved, it will be merged into the m
 
 ## Developers 👨‍💻👩‍💻
 
-- [@Sahid Raja Ansari](https://www.linkedin.com/in/sahidrajaansari/)
-- [@Shaharyar Alam](https://www.linkedin.com/in/shaharyar-alam-305322208/)
-
----
+- Gaurav Barhate
