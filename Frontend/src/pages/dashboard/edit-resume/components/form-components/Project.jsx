@@ -13,6 +13,8 @@ import { updateThisResume } from "@/Services/resumeAPI";
 const formFields = {
   projectName: "",
   techStack: "",
+  startDate: "",
+  endDate: "",
   projectSummary: "",
 };
 function Project({ resumeInfo, setEnabledNext, setEnabledPrev }) {
@@ -117,12 +119,34 @@ function Project({ resumeInfo, setEnabledNext, setEnabledPrev }) {
                 />
               </div>
               <div>
-                <label className="text-xs">Company Name</label>
+                <label className="text-xs">Tech Stack</label>
                 <Input
                   type="text"
                   name="techStack"
                   value={project?.techStack}
                   placeholder="React, Node.js, Express, MongoDB"
+                  onChange={(e) => {
+                    handleChange(e, index);
+                  }}
+                />
+              </div>
+              <div>
+                <label className="text-xs">Start Date</label>
+                <Input
+                  type="date"
+                  name="startDate"
+                  value={project?.startDate}
+                  onChange={(e) => {
+                    handleChange(e, index);
+                  }}
+                />
+              </div>
+              <div>
+                <label className="text-xs">End Date</label>
+                <Input
+                  type="date"
+                  name="endDate"
+                  value={project?.endDate}
                   onChange={(e) => {
                     handleChange(e, index);
                   }}

@@ -38,6 +38,12 @@ function ThemeColor({ resumeInfo }) {
     "#5A33FF",
     "#FF335A",
     "#335AFF",
+    // Black color variations
+    "#000000", // Pure black
+    "#1a1a1a", // Very dark gray
+    "#333333", // Dark gray
+    "#4a4a4a", // Medium dark gray
+    "#666666", // Medium gray
   ];
 
   const [selectedColor, setSelectedColor] = useState();

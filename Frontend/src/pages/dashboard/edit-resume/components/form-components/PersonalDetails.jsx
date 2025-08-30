@@ -19,6 +19,10 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
     address: resumeInfo?.address || "",
     phone: resumeInfo?.phone || "",
     email: resumeInfo?.email || "",
+    competitiveProgrammingPlatform: resumeInfo?.competitiveProgrammingPlatform || "",
+    competitiveProgrammingLink: resumeInfo?.competitiveProgrammingLink || "",
+    otherProfilePlatform: resumeInfo?.otherProfilePlatform || "",
+    otherLink: resumeInfo?.otherLink || "",
   });
 
   const handleInputChange = (e) => {
@@ -47,6 +51,10 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
         address: e.target.address.value,
         phone: e.target.phone.value,
         email: e.target.email.value,
+        competitiveProgrammingPlatform: e.target.competitiveProgrammingPlatform.value,
+        competitiveProgrammingLink: e.target.competitiveProgrammingLink.value,
+        otherProfilePlatform: e.target.otherProfilePlatform.value,
+        otherLink: e.target.otherLink.value,
       },
     };
     if (resume_id) {
@@ -120,6 +128,52 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
               name="email"
               required
               defaultValue={resumeInfo?.email}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <label className="text-sm">Competitive Programming Platform</label>
+            <select
+              name="competitiveProgrammingPlatform"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              defaultValue={resumeInfo?.competitiveProgrammingPlatform}
+              onChange={handleInputChange}
+            >
+              <option value="">Select Platform</option>
+              <option value="leetcode">LeetCode</option>
+              <option value="codeforces">Codeforces</option>
+              <option value="codechef">CodeChef</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-sm">Competitive Programming Profile URL</label>
+            <Input
+              name="competitiveProgrammingLink"
+              placeholder="e.g., https://leetcode.com/username"
+              defaultValue={resumeInfo?.competitiveProgrammingLink}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <label className="text-sm">Other Profile Platform</label>
+            <select
+              name="otherProfilePlatform"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              defaultValue={resumeInfo?.otherProfilePlatform}
+              onChange={handleInputChange}
+            >
+              <option value="">Select Platform</option>
+              <option value="portfolio">Portfolio</option>
+              <option value="github">GitHub</option>
+              <option value="linkedin">LinkedIn</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-sm">Other Profile URL</label>
+            <Input
+              name="otherLink"
+              placeholder="e.g., https://github.com/username"
+              defaultValue={resumeInfo?.otherLink}
               onChange={handleInputChange}
             />
           </div>

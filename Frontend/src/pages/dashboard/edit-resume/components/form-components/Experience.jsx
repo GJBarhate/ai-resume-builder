@@ -15,6 +15,7 @@ const formFields = {
   companyName: "",
   city: "",
   state: "",
+  workMode: "onsite",
   startDate: "",
   endDate: "",
   currentlyWorking: "",
@@ -121,7 +122,7 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
               </div>
               <div className="grid grid-cols-2 gap-3 border p-3 my-5 rounded-lg">
                 <div>
-                  <label className="text-xs">Position Tittle</label>
+                  <label className="text-xs">Position Title</label>
                   <Input
                     type="text"
                     name="title"
@@ -142,30 +143,49 @@ function Experience({ resumeInfo, enanbledNext, enanbledPrev }) {
                     }}
                   />
                 </div>
-                <div>
-                  <label className="text-xs">City</label>
-                  <Input
-                    type="text"
-                    name="city"
-                    value={experience?.city}
+                <div className="col-span-2">
+                  <label className="text-xs">Work Mode</label>
+                  <select
+                    name="workMode"
+                    value={experience?.workMode || "onsite"}
                     onChange={(e) => {
                       handleChange(e, index);
                     }}
-                  />
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="onsite">On-site</option>
+                    <option value="hybrid">Hybrid</option>
+                    <option value="remote">Remote</option>
+                  </select>
                 </div>
+                {experience?.workMode !== "remote" && (
+                  <>
+                    <div>
+                      <label className="text-xs">City</label>
+                      <Input
+                        type="text"
+                        name="city"
+                        value={experience?.city}
+                        onChange={(e) => {
+                          handleChange(e, index);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs">State</label>
+                      <Input
+                        type="text"
+                        name="state"
+                        value={experience?.state}
+                        onChange={(e) => {
+                          handleChange(e, index);
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
                 <div>
-                  <label className="text-xs">State</label>
-                  <Input
-                    type="text"
-                    name="state"
-                    value={experience?.state}
-                    onChange={(e) => {
-                      handleChange(e, index);
-                    }}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs">StartDate</label>
+                  <label className="text-xs">Start Date</label>
                   <Input
                     type="date"
                     name="startDate"

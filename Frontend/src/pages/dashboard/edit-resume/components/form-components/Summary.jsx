@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { Sparkles, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,12 +11,13 @@ import { AIChatSession } from "@/Services/AiModel";
 import { updateThisResume } from "@/Services/resumeAPI";
 
 const prompt =
-  "Job Title: {jobTitle} , Depends on job title give me list of  summery for 3 experience level, Mid Level and Freasher level in 3 -4 lines in array format, With summery and experience_level Field in JSON Format";
+  "Job Title: {jobTitle} , Depends on job title give me list of summery for 3 experience level, Mid Level and Freasher level in 3 -4 lines in array format, With summery and experience_level Field in JSON Format";
+
 function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false); // Declare the undeclared variable using useState
-  const [summary, setSummary] = useState(resumeInfo?.summary || ""); // Declare the undeclared variable using useState
-  const [aiGeneratedSummeryList, setAiGenerateSummeryList] = useState(null); // Declare the undeclared variable using useState
+  const [loading, setLoading] = useState(false);
+  const [summary, setSummary] = useState(resumeInfo?.summary || "");
+  const [aiGeneratedSummeryList, setAiGenerateSummeryList] = useState(null);
   const { resume_id } = useParams();
 
   const handleInputChange = (e) => {
@@ -34,12 +36,10 @@ function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
     e.preventDefault();
     setLoading(true);
     console.log("Started Saving Summary");
-    const data = {
-      data: { summary },
-    };
+
     if (resume_id) {
-      updateThisResume(resume_id, data)
-        .then((data) => {
+      updateThisResume(resume_id, { data: { summary } })
+        .then(() => {
           toast("Resume Updated", "success");
         })
         .catch((error) => {
@@ -51,7 +51,7 @@ function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
           setLoading(false);
         });
     }
-  }; // Declare the undeclared variable using useState
+  };
 
   const setSummery = (summary) => {
     dispatch(
@@ -74,12 +74,15 @@ function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
     const PROMPT = prompt.replace("{jobTitle}", resumeInfo?.jobTitle);
     try {
       const result = await AIChatSession.sendMessage(PROMPT);
-      console.log(JSON.parse(result.response.text()));
-      setAiGenerateSummeryList(JSON.parse(result.response.text()));
+      const aiResponse = JSON.parse(result.response.text());
+      const summaryList = Array.isArray(aiResponse) ? aiResponse : [aiResponse];
+      console.log(summaryList);
+      setAiGenerateSummeryList(summaryList);
       toast("Summery Generated", "success");
     } catch (error) {
       console.log(error);
-      toast("${error.message}", `${error.message}`);
+      toast("Error generating summary", `${error.message}`);
+      setAiGenerateSummeryList([]);
     } finally {
       setLoading(false);
     }
@@ -119,10 +122,10 @@ function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
         </form>
       </div>
 
-      {aiGeneratedSummeryList && (
+      {aiGeneratedSummeryList && Array.isArray(aiGeneratedSummeryList) && (
         <div className="my-5">
           <h2 className="font-bold text-lg">Suggestions</h2>
-          {aiGeneratedSummeryList?.map((item, index) => (
+          {aiGeneratedSummeryList.map((item, index) => (
             <div
               key={index}
               onClick={() => {
@@ -143,5 +146,14 @@ function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
     </div>
   );
 }
+
+Summary.propTypes = {
+  resumeInfo: PropTypes.shape({
+    summary: PropTypes.string,
+    jobTitle: PropTypes.string,
+  }),
+  enanbledNext: PropTypes.func.isRequired,
+  enanbledPrev: PropTypes.func.isRequired,
+};
 
 export default Summary;
