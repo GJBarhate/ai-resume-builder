@@ -10,14 +10,15 @@ import { toast } from "sonner";
 import { AIChatSession } from "@/Services/AiModel";
 import { updateThisResume } from "@/Services/resumeAPI";
 
-const prompt =
-  "Job Title: {jobTitle} , Depends on job title give me list of summery for 3 experience level, Mid Level and Freasher level in 3 -4 lines in array format, With summery and experience_level Field in JSON Format";
+const promptTemplate = `Job Title: {jobTitle}. 
+Give me a list of summaries for 3 experience levels (Fresher, Mid, Senior) in 3-4 lines each. 
+Return a JSON array with fields "summary" and "experience_level".`;
 
 function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState(resumeInfo?.summary || "");
-  const [aiGeneratedSummeryList, setAiGenerateSummeryList] = useState(null);
+  const [aiGeneratedSummaryList, setAiGeneratedSummaryList] = useState([]);
   const { resume_id } = useParams();
 
   const handleInputChange = (e) => {
@@ -32,57 +33,57 @@ function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
     setSummary(e.target.value);
   };
 
-  const onSave = (e) => {
+  const onSave = async (e) => {
     e.preventDefault();
+    if (!resume_id) return;
     setLoading(true);
-    console.log("Started Saving Summary");
-
-    if (resume_id) {
-      updateThisResume(resume_id, { data: { summary } })
-        .then(() => {
-          toast("Resume Updated", "success");
-        })
-        .catch((error) => {
-          toast("Error updating resume", `${error.message}`);
-        })
-        .finally(() => {
-          enanbledNext(true);
-          enanbledPrev(true);
-          setLoading(false);
-        });
+    try {
+      await updateThisResume(resume_id, { data: { summary } });
+      toast("Resume Updated", "success");
+    } catch (error) {
+      toast("Error updating resume", error.message);
+    } finally {
+      enanbledNext(true);
+      enanbledPrev(true);
+      setLoading(false);
     }
   };
 
-  const setSummery = (summary) => {
+  const setSummaryValue = (newSummary) => {
     dispatch(
       addResumeData({
         ...resumeInfo,
-        summary: summary,
+        summary: newSummary,
       })
     );
-    setSummary(summary);
+    setSummary(newSummary);
   };
 
-  const GenerateSummeryFromAI = async () => {
-    setLoading(true);
-    console.log("Generate Summery From AI for", resumeInfo?.jobTitle);
+  const GenerateSummaryFromAI = async () => {
     if (!resumeInfo?.jobTitle) {
-      toast("Please Add Job Title");
-      setLoading(false);
+      toast("Please add a Job Title");
       return;
     }
-    const PROMPT = prompt.replace("{jobTitle}", resumeInfo?.jobTitle);
+
+    setLoading(true);
+    const PROMPT = promptTemplate.replace("{jobTitle}", resumeInfo.jobTitle);
+
     try {
       const result = await AIChatSession.sendMessage(PROMPT);
-      const aiResponse = JSON.parse(result.response.text());
+      const rawText = result.response.text();
+      console.log("AI Raw Response:", rawText);
+
+      // Clean and parse JSON safely
+      const cleaned = rawText.replace(/\n/g, "").trim();
+      const aiResponse = JSON.parse(cleaned);
       const summaryList = Array.isArray(aiResponse) ? aiResponse : [aiResponse];
-      console.log(summaryList);
-      setAiGenerateSummeryList(summaryList);
-      toast("Summery Generated", "success");
+
+      setAiGeneratedSummaryList(summaryList);
+      toast("Summary Generated", "success");
     } catch (error) {
-      console.log(error);
-      toast("Error generating summary", `${error.message}`);
-      setAiGenerateSummeryList([]);
+      console.error("AI Parsing Error:", error);
+      toast("Error generating summary", error.message);
+      setAiGeneratedSummaryList([]);
     } finally {
       setLoading(false);
     }
@@ -96,10 +97,10 @@ function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
 
         <form className="mt-7" onSubmit={onSave}>
           <div className="flex justify-between items-end">
-            <label>Add Summery</label>
+            <label>Add Summary</label>
             <Button
               variant="outline"
-              onClick={() => GenerateSummeryFromAI()}
+              onClick={GenerateSummaryFromAI}
               type="button"
               size="sm"
               className="border-primary text-primary flex gap-2"
@@ -107,13 +108,15 @@ function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
               <Sparkles className="h-4 w-4" /> Generate from AI
             </Button>
           </div>
+
           <Textarea
             name="summary"
             className="mt-5"
             required
-            value={summary ? summary : resumeInfo?.summary}
+            value={summary}
             onChange={handleInputChange}
           />
+
           <div className="mt-2 flex justify-end">
             <Button type="submit" disabled={loading}>
               {loading ? <LoaderCircle className="animate-spin" /> : "Save"}
@@ -122,23 +125,23 @@ function Summary({ resumeInfo, enanbledNext, enanbledPrev }) {
         </form>
       </div>
 
-      {aiGeneratedSummeryList && Array.isArray(aiGeneratedSummeryList) && (
+      {aiGeneratedSummaryList.length > 0 && (
         <div className="my-5">
           <h2 className="font-bold text-lg">Suggestions</h2>
-          {aiGeneratedSummeryList.map((item, index) => (
+          {aiGeneratedSummaryList.map((item, index) => (
             <div
               key={index}
               onClick={() => {
                 enanbledNext(false);
                 enanbledPrev(false);
-                setSummery(item?.summary);
+                setSummaryValue(item.summary);
               }}
               className="p-5 shadow-lg my-4 rounded-lg cursor-pointer"
             >
               <h2 className="font-bold my-1 text-primary">
-                Level: {item?.experience_level}
+                Level: {item.experience_level}
               </h2>
-              <p>{item?.summary}</p>
+              <p>{item.summary}</p>
             </div>
           ))}
         </div>

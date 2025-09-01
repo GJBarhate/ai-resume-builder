@@ -29,11 +29,14 @@ function App() {
       }
     };
     fetchResponse();
-  }, []);
+  }, [dispatch]);
 
-  if (!user) {
+ useEffect(() => {
+  if (user === null || user === "") {
     navigate("/");
   }
+}, [user, navigate]);
+
 
   return (
     <>
