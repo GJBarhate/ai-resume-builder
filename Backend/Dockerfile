@@ -18,7 +18,7 @@ COPY --chown=appuser:nodejs package*.json ./
 
 # Install only production dependencies
 # npm ci is generally better for CI/CD environments
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Now copy the rest of the application files
 COPY --chown=appuser:nodejs . .
