@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { getTemplate } from "@/components/templates";
 import PersonalDeatailPreview from "./preview-components/PersonalDeatailPreview";
-import SummeryPreview from "./preview-components/SummaryPreview";
 import ExperiencePreview from "./preview-components/ExperiencePreview";
 import EducationalPreview from "./preview-components/EducationalPreview";
 import SkillsPreview from "./preview-components/SkillsPreview";
 import ProjectPreview from "./preview-components/ProjectPreview";
 import { SectionSettingsProvider } from "@/contexts/SectionSettingsContext";
+import SummaryPreview from "./preview-components/SummaryPreview";
 
 function PreviewPage() {
   const resumeData = useSelector((state) => state.editResume.resumeData);
@@ -50,7 +50,7 @@ function PreviewPage() {
       >
         <PersonalDeatailPreview resumeInfo={resumeData} />
         {}
-        <SummeryPreview resumeInfo={resumeData} />
+        <SummaryPreview resumeInfo={{ summary: resumeData?.summary }} />
         {resumeData?.experience && <ExperiencePreview resumeInfo={resumeData} />}
         {resumeData?.projects && <ProjectPreview resumeInfo={resumeData} />}
         {resumeData?.education && <EducationalPreview resumeInfo={resumeData} />}
